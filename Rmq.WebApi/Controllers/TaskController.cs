@@ -46,7 +46,7 @@ namespace Rmq.WebApi.Controllers
             return new JsonResult(results);
         }
 
-        [HttpGet]
+        [HttpPost]
         [Route("[action]")]
         public IActionResult CleanResults()
         {
