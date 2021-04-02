@@ -19,10 +19,10 @@ Generates tasks with your args for all the workers.
 JSON { "args": ["10,8", "4,5"] }
 args - arguments for tasks
 
-GET /api/task/getresults?actiontype=webapi.random
+GET /api/task/getresults?actiontype=random&workerId=1
 or
-GET /api/task/getresults?actiontype=webapi.all
-Gets results from in-memory storage.
+GET /api/task/getresults?actiontype=all&workerId=1
+Gets results from in-memory storage. Worker ids are 1, 2 or 3.
 
 Worker projects (1,2,3) execute tasks with delay on different result values. That's just for example of long running tasks.
 Worker1 makes addition, Worker2 makes multiplication and Worker3 makes comparison.

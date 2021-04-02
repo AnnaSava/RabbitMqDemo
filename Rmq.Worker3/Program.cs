@@ -33,7 +33,7 @@ namespace Rmq.Worker3
             return new TaskResult()
             {
                 TaskId = args.TaskId,
-                SenderRoute = args.SenderRoute,
+                SenderRoute = args.SenderRoute + ".w3",
                 Result = printedResult,
             };
         }

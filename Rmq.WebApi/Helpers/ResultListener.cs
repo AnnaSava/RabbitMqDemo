@@ -2,6 +2,7 @@
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using Rmq.WebApi.Models;
+using System;
 using System.Text;
 
 namespace Rmq.WebApi.Helpers
@@ -13,6 +14,8 @@ namespace Rmq.WebApi.Helpers
         ConnectionFactory factory { get; set; }
         IConnection connection { get; set; }
         IModel channel { get; set; }
+        string[] ListenActions { get; set; }
+        string[] ListenWorkers { get; set; }
 
         public ResultListener(IOptions<RabbitMqConfiguration> rabbitMqOptions)
         {
@@ -20,19 +23,28 @@ namespace Rmq.WebApi.Helpers
             connection = factory.CreateConnection();
             channel = connection.CreateModel();
             resultExchangeName = rabbitMqOptions.Value.ResultExchangeName;
+            ListenActions = rabbitMqOptions.Value.ListenActions.Split(",");
+            ListenWorkers = rabbitMqOptions.Value.ListenWorkers.Split(",");
+            if (ListenActions.Length == 0 || ListenWorkers.Length == 0)
+                throw new Exception("No actions or workers!");
         }
+
         public void Register()
         {
             channel.ExchangeDeclare(exchange: resultExchangeName, type: ExchangeType.Topic);
 
             var queueName = channel.QueueDeclare().QueueName;
-            channel.QueueBind(queue: queueName,
-                              exchange: resultExchangeName,
-                              routingKey: RoutingKeys.Random);
 
-            channel.QueueBind(queue: queueName,
-                              exchange: resultExchangeName,
-                              routingKey: RoutingKeys.All);
+            foreach(var action in ListenActions)
+            {
+                foreach(var worker in ListenWorkers)
+                {
+                    var routingKey = RoutingKeys.FormatKey(action, worker);
+                    channel.QueueBind(queue: queueName,
+                                  exchange: resultExchangeName,
+                                  routingKey: routingKey);
+                }
+            }
 
             var consumer = new EventingBasicConsumer(channel);
             consumer.Received += (model, ea) =>

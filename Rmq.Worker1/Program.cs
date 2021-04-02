@@ -34,7 +34,7 @@ namespace Rmq.Worker1
             return new TaskResult()
             {
                 TaskId = args.TaskId,
-                SenderRoute = args.SenderRoute,
+                SenderRoute = args.SenderRoute + ".w1",
                 Result = printedResult,
             };
         }

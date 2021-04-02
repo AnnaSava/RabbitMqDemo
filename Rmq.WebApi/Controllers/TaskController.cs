@@ -40,9 +40,11 @@ namespace Rmq.WebApi.Controllers
 
         [HttpGet]
         [Route("[action]")]
-        public IActionResult GetResults(string actionType)
+
+        public IActionResult GetResults(string actionType, string workerId)
         {
-            var results = ImMemResultsStorage.Results.Where(m => m.RoutingKey == actionType);
+            var routingKey = RoutingKeys.FormatKey(actionType, workerId);
+            var results = ImMemResultsStorage.Results.Where(m => m.RoutingKey == routingKey);
             return new JsonResult(results);
         }
 
